@@ -36,7 +36,10 @@ def collect_logs():
     for path, _, files in os.walk("logs"):
         for f in files:
             with open(os.path.join(path, f)) as j:
-                yield json.load(j)
+                try:
+                    yield json.load(j)
+                except json.JSONDecodeError:
+                    pass
 
 
 def format_time(timestamp):
