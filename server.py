@@ -39,15 +39,19 @@ def collect_logs():
                 yield json.load(j)
 
 
+def format_time(timestamp):
+    return datetime.datetime.fromisoformat(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+
+
 def get_leaderboards():
     results = [[] for _ in DATA]
     for log in collect_logs():
-        leaderboard[log["test_set_id"]].append(
-            log["team_name"], log["timestamp"], log["chrf"])
+        results[log["test_set_id"]].append(
+            (log["team_name"], format_time(log["timestamp"]), log["chrf"]))
 
     leaderboards = []
     for result_list in results:
-        result_list.sort(key=lambda x: x.chrf, reverse=True)
+        result_list.sort(key=lambda x: x[-1], reverse=True)
         leaderboards.append(
             [Result(i + 1, team_name, timestamp, chrf)
              for i, (team_name, timestamp, chrf)

@@ -37,8 +37,8 @@
                     {% for team in item[1] %}
                     <tr>
                         <td>{{ team.rank }}</td>
-                        <td>{{ team.team }} ({{ team.timestamp }})</td>
-                        <td>{{ team.chrf }}</td>
+                        <td>{{ team.team_name }} <small class="text-muted">({{ team.timestamp }})</small></td>
+                        <td align="right">{{ "%.2f"|format(team.chrf) }}</td>
                     </tr>
                     {% endfor %}
                     </tbody>
