@@ -17,7 +17,7 @@ function mt_eval(id) {
 
     // Otherwise, submit the translation to the server for evaluation
     let translation = $("#target_" + id).val();
-    $.post("/mt_eval", {
+    $.post("mt_eval", {
         test_set_id: id,
         team_name: $("#team_name").val(),
         translation: translation,
@@ -44,7 +44,7 @@ function mt_eval(id) {
                 <input type="text" id="team_name" class="form-control" placeholder="Your team name">
             </div>
         </div>
-        <p><a href="/leaderboard">Check the leaderboard</a></p>
+        <p><a href="leaderboard">Check the leaderboard</a></p>
     </div>
 
     <div class="container">
