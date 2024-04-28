@@ -52,8 +52,16 @@ def get_leaderboards():
         results[log["test_set_id"]].append(
             (log["team_name"], format_time(log["timestamp"]), log["chrf"]))
 
-    leaderboards = []
+    unique_results = []
     for result_list in results:
+        unique_dict = {}
+        for team_name, timestamp, chrf in result_list:
+            if team_name not in unique_dict or unique_dict[team_name][-1] < chrf:
+                unique_dict[team_name] = (team_name, timestamp, chrf)
+        unique_results.append(list(unique_dict.values()))
+
+    leaderboards = []
+    for result_list in unique_results:
         result_list.sort(key=lambda x: x[-1], reverse=True)
         leaderboards.append(
             [Result(i + 1, team_name, timestamp, chrf)
