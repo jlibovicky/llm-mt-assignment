@@ -161,4 +161,4 @@ if __name__ == "__main__":
     # Store if it is after the competition
     app.config["after_competition"] = args.after_competition
 
-    app.run(host=args.host, port=args.port, debug=True)
+    app.run(host=args.host, port=args.port, debug=False)
