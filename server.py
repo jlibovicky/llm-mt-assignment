@@ -89,10 +89,12 @@ def get_leaderboards():
     leaderboards = []
     for result_list in unique_results:
         result_list.sort(key=lambda x: x[-1], reverse=True)
+        if not app.config["after_competition"]:
+            result_list = result_list[:10]
         leaderboards.append(
             [Result(i + 1, team_name, timestamp, chrf)
              for i, (team_name, timestamp, chrf)
-             in enumerate(result_list[:10])])
+             in enumerate(result_list)])
 
     return leaderboards
 
