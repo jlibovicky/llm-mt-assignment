@@ -18,8 +18,32 @@ app = Flask(__name__, template_folder='.')
 
 DATA = []
 
-TestSet = namedtuple("TestSet", ["id", "language", "source", "referece"])
+TestSet = namedtuple("TestSet", ["id", "language", "language_full", "source", "reference"])
 Result = namedtuple("Result", ["rank", "team_name", "timestamp", "chrf"])
+
+LANGUAGES = {
+	"cs": "Czech",
+	"de": "German",
+	"hsb": "Upper Sorbian",
+	"gla": "Scottish Gaelic",
+	"gle": "Irish",
+	"epo": "Esperanto",
+	"iku": "Inuktitut",
+	"ukr": "Ukrainian",
+	"hau": "Hausa",
+	"tel": "Telugu",
+	"zho": "Chinese",
+	"ita": "Italian",
+	"nor": "Norwegian",
+	"ltz": "Luxembourgish",
+	"ori": "Odia",
+	"sxu": "Saxon German",
+	"pl": "Polish",
+	"csb": "Kashubian",
+	"yid": "Yidish",
+	"he": "Hebrew",
+	"srd": "Sardinian"
+}
 
 
 @app.route("/script.js")
@@ -29,6 +53,8 @@ def script():
 
 @app.route("/")
 def index():
+    if app.config["after_competition"]:
+        return leaderboard()
     return flask.render_template("page.html", test_data=DATA)
 
 
@@ -74,7 +100,9 @@ def get_leaderboards():
 @app.route("/leaderboard")
 def leaderboard():
     return flask.render_template(
-        "leaderboard.html", test_data=zip(DATA, get_leaderboards()))
+        "leaderboard.html",
+        test_data=zip(DATA, get_leaderboards()),
+        after_competition=app.config["after_competition"])
 
 
 @app.route("/mt_eval", methods=["POST"])
@@ -82,7 +110,7 @@ def mt_eval():
     team_name = flask.request.form["team_name"]
     test_set_id = int(flask.request.form["test_set_id"])
     translation = flask.request.form["translation"]
-    reference = DATA[test_set_id].referece
+    reference = DATA[test_set_id].reference
     language = DATA[test_set_id].language
 
     # Copute chrF score using sacrebleu
@@ -113,15 +141,22 @@ if __name__ == "__main__":
         "--port", default=5000, type=int, help="Port to listen on.")
     parser.add_argument(
         "data", help="csv file with test data.", type=argparse.FileType("r"))
+    parser.add_argument(
+        "--after-competition", action="store_true",
+        help="It is already after the competition.")
     args = parser.parse_args()
 
     args.data.readline()
     reader = csv.reader(args.data)
     for i, row in enumerate(reader):
         DATA.append(
-            TestSet(i, row[0], row[1], row[2]))
+            TestSet(i, row[0], LANGUAGES[row[0]], row[1], row[2]))
+
     args.data.close()
 
     os.makedirs("logs", exist_ok=True)
+
+    # Store if it is after the competition
+    app.config["after_competition"] = args.after_competition
 
     app.run(host=args.host, port=args.port, debug=True)

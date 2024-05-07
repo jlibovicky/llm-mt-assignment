@@ -14,14 +14,26 @@
     <div class="container mb-5">
         <h1>NPFL140 Assignment: Machine Translation with LLMs</h1>
         <h2>Leaderboard</h2>
+        {% if not after_competition %}
         <p><a href=".">Back to the submission page</a></p>
+        {% endif %}
     </div>
 
     <div class="container">
     {% for item in test_data %}
         <div class="row mb-3">
             <div class="col-6" id="source_{{ item.id }}">
+                {% if after_competition %}
+                <h3>{{item[0].language_full}}</h3>
+                {% else %}
+                <h3>Language {{item[0].id + 1}}</h3>
+                {% endif %}
                 <p>{{ item[0].source }}</p>
+
+                {% if after_competition %}
+                <hr />
+                <p class="text-secondary">{{ item[0].reference }}</p>
+                {% endif %}
             </div>
 
             <div class="col-6">
